@@ -13,6 +13,7 @@ board = [['♜', '♞', '♝', '♛', '♚', '♝', '♞', '♜'],
 buttons = []
 cell_size = 60
 piece_size = 40
+piece_selected = False
 ########################## Initialise #######################
 window = Tk()
 window.title("Chess")
@@ -51,10 +52,24 @@ def set_buttons(skin):
             else:
                 buttons[i][j].config(image=gray_block, compound="center")
 
-
+##Start work from here
 def piece_control(i, j):
-    print(i, j)
-    print(buttons[i][j]["text"])
+    global piece_selected, select_memory
+    coordinates = [i, j]
+    piece = buttons[i][j]["text"]
+    print(piece, coordinates)
+
+    if piece != "" and not piece_selected: #Selecting a piece
+        piece_selected = True
+        select_memory = [piece, coordinates]
+
+    elif piece == "" and piece_selected: #Movement
+        pass
+    elif piece != "" and piece_selected: #Occupied Cell
+        if piece:
+            pass
+
+
 
 
 ##################### Menu Bar #####################
@@ -66,7 +81,7 @@ menu_bar.add_cascade(label="Change Skin", menu=skin_menu)
 window.config(menu=menu_bar)
 
 
-
+#Equivalent to set_buttons()
 change_skin_to_default()
 
 
