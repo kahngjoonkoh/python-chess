@@ -14,6 +14,8 @@ cell_size = 60
 piece_size = 40
 piece_selected = False
 turn = "white"
+select_memory = {"piece": None, "coordinates": None}
+log_history = []
 ########################## Initialise #######################
 window = Tk()
 window.title("Chess")
@@ -26,6 +28,7 @@ capture_block = PhotoImage(file="red_block.PNG") #pyimage7
 window.iconphoto(False, icon)
 window.geometry("544x565")
 
+# TODO: Create the alphabet and numeric notations on the sides
 ####################### Functions #########################
 def reset_board():
     global buttons
@@ -62,12 +65,14 @@ def refresh_board():
                 buttons[i][j].config(image=gray_block, compound="center")
 
 
-def end_turn(piece, coordinates):
+def end_turn(piece, coordinates, motion):
     global piece_selected, turn, select_memory
-    if select_memory["piece"] == "♟" and select_memory["coordinates"]["x"] == 6 and coordinates["x"] == 7:
-        promote("black")
-    elif select_memory["piece"] == "♙" and select_memory["coordinates"]["x"] == 1 and coordinates["x"] == 0:
+    log = f"{select_memory['piece']}[{select_memory['coordinates']['x']+1},{select_memory['coordinates']['y']+1}] {motion} {piece}[{coordinates['x']+1},{coordinates['y']+1}]"
+    if select_memory["piece"] == "♙" and select_memory["coordinates"]["x"] == 1 and coordinates["x"] == 0:
         promote("white")
+    elif select_memory["piece"] == "♟" and select_memory["coordinates"]["x"] == 6 and coordinates["x"] == 7:
+        promote("black")
+    print(log)
     piece_selected = False
     select_memory = {"piece": None, "coordinates": None}
     if turn == "white":
@@ -89,41 +94,46 @@ def update_turn(root):
 
 
 def promote(c):
-    print("🎖️")
+    global select_memory, promotion_window
     small_font = ("helvetica", 20)
     promotion_window = Tk()
     promotion_window.title("Select Promotion")
     promotion_window.geometry("260x55")
     if c == "white":
         Button(promotion_window, text="♙", font=small_font,
-               command=lambda p="♙", root=promotion_window: promote_to(p, root)).grid(row=0, column=0)
+               command=lambda color=c, p="♙", root=promotion_window: promote_to(color, p, root)).grid(row=0, column=0)
         Button(promotion_window, text="♘", font=small_font,
-               command=lambda p="♘", root=promotion_window: promote_to(p, root)).grid(row=0, column=1)
+               command=lambda color=c, p="♘", root=promotion_window: promote_to(color, p, root)).grid(row=0, column=1)
         Button(promotion_window, text="♗", font=small_font,
-               command=lambda p="♗", root=promotion_window: promote_to(p, root)).grid(row=0, column=2)
+               command=lambda color=c, p="♗", root=promotion_window: promote_to(color, p, root)).grid(row=0, column=2)
         Button(promotion_window, text="♖", font=small_font,
-               command=lambda p="♖", root=promotion_window: promote_to(p, root)).grid(row=0, column=3)
+               command=lambda color=c, p="♖", root=promotion_window: promote_to(color, p, root)).grid(row=0, column=3)
         Button(promotion_window, text="♕", font=small_font,
-               command=lambda p="♕", root=promotion_window: promote_to(p, root)).grid(row=0, column=4)
+               command=lambda color=c, p="♕", root=promotion_window: promote_to(color, p, root)).grid(row=0, column=4)
 
     elif c == "black":
         Button(promotion_window, text="♟", font=small_font,
-               command=lambda p="♟", root=promotion_window: promote_to(p, root)).grid(row=0, column=0)
+               command=lambda color=c, p="♟", root=promotion_window: promote_to(color, p, root)).grid(row=0, column=0)
         Button(promotion_window, text="♞", font=small_font,
-               command=lambda p="♞", root=promotion_window: promote_to(p, root)).grid(row=0, column=1)
+               command=lambda color=c, p="♞", root=promotion_window: promote_to(color, p, root)).grid(row=0, column=1)
         Button(promotion_window, text="♝", font=small_font,
-               command=lambda p="♝", root=promotion_window: promote_to(p, root)).grid(row=0, column=2)
+               command=lambda color=c, p="♝", root=promotion_window: promote_to(color, p, root)).grid(row=0, column=2)
         Button(promotion_window, text="♜", font=small_font,
-               command=lambda p="♜", root=promotion_window: promote_to(p, root)).grid(row=0, column=3)
+               command=lambda color=c, p="♜", root=promotion_window: promote_to(color, p, root)).grid(row=0, column=3)
         Button(promotion_window, text="♛", font=small_font,
-               command=lambda p="♛", root=promotion_window: promote_to(p, root)).grid(row=0, column=4)
+               command=lambda color=c, p="♛", root=promotion_window: promote_to(color, p, root)).grid(row=0, column=4)
 
 
-def promote_to(p, root):
-    print("promoting")
+def promote_to(color, p, root):
     global piece, coordinates, select_memory
     tile["text"] = p
     board[coordinates["x"]][coordinates["y"]] = p
+    promoted_to = p
+    if color == "white":
+        log = f"♙-🎖️→{promoted_to}"
+    elif color == "black":
+        log = f"♟-🎖️→{promoted_to}"
+    print(log)
     root.destroy()
 
 
@@ -131,10 +141,8 @@ def select_piece(i, j):
     global piece_selected, select_memory, tile
     piece_selected = True
     tile["image"] = sel_block
-    print(piece)
     select_memory = {"piece": piece, "coordinates": coordinates}
     if piece == "♙":  # White Pawn
-        print("1")
         if i == 6:  # Two space movement at first move
             buttons[i - 1][j]["image"] = move_block
             buttons[i - 2][j]["image"] = move_block
@@ -154,7 +162,6 @@ def select_piece(i, j):
 
     # TODO:En passant capture
     elif piece == "♟":  # Black Pawn
-        print("2")
         if i == 1:  # Two space movement at first move
             buttons[i + 1][j]["image"] = move_block
             buttons[i + 2][j]["image"] = move_block
@@ -171,7 +178,7 @@ def select_piece(i, j):
                 buttons[i + 1][j + 1]["image"] = capture_block
         except:
             pass
-    print("3")
+
 
 def piece_control(i, j):
     global piece_selected, turn, select_memory, piece, coordinates, tile
@@ -184,8 +191,6 @@ def piece_control(i, j):
         color = "black"
     else:
         color = None
-    print(piece, coordinates)
-    print(tile["image"],piece_selected,color,turn)
 
     # If a piece is newly selected and its the person's turn.
     if piece != " " and not piece_selected and color == turn:  # Selecting a piece
@@ -197,7 +202,7 @@ def piece_control(i, j):
         board[i][j] = select_memory["piece"]
         buttons[select_memory["coordinates"]["x"]][select_memory["coordinates"]["y"]]["text"] = " "
         board[select_memory["coordinates"]["x"]][select_memory["coordinates"]["y"]] = " "
-        end_turn(piece, coordinates)
+        end_turn(piece, coordinates, "→")
 
     # Cancellation
     elif coordinates == select_memory["coordinates"]:
@@ -208,7 +213,6 @@ def piece_control(i, j):
     # coordinates != select_memory["coordinates"] is implied
     # Choosing a different piece.
     elif piece != " " and color == turn:
-        print("inline")
         piece_selected = False
         select_memory = {"piece": None, "coordinates": None}
         refresh_board()
@@ -220,8 +224,9 @@ def piece_control(i, j):
         board[i][j] = select_memory["piece"]
         buttons[select_memory["coordinates"]["x"]][select_memory["coordinates"]["y"]]["text"] = " "
         board[select_memory["coordinates"]["x"]][select_memory["coordinates"]["y"]] = " "
-        print("⚔", piece, coordinates)
-        end_turn(piece, coordinates)
+        end_turn(piece, coordinates, "⚔")  # Print the capture too
+
+
 
 
 
@@ -244,10 +249,13 @@ skin_menu.add_command(label="Arial", command=change_skin_to_arial)
 overall_menu = Menu(menu_bar, tearoff=0)
 overall_menu.add_cascade(label="Show Log", command=show_log)
 overall_menu.add_cascade(label="Skin Settings", menu=skin_menu)
+overall_menu.add_separator()
+# TODO: Save & Quit feature
+overall_menu.add_cascade(label="Quit", command=window.destroy)
 
 menu_bar.add_cascade(label="☰", menu=overall_menu)
 
-# TODO: Lable should change after end_turn()
+# TODO: Label should change after end_turn()
 menu_bar.add_cascade(label="White's turn") # , command=lambda: update_turn(menu_bar)
 
 window.config(menu=menu_bar)
