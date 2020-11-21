@@ -1,5 +1,4 @@
 from tkinter import *
-import tkinter.ttk
 
 board = [['♜', '♞', '♝', '♛', '♚', '♝', '♞', '♜'],
          ['♟', '♟', '♟', '♟', '♟', '♟', '♟', '♟'],
@@ -47,7 +46,7 @@ def set_buttons(skin):
     for i in range(8):
         buttons.append([])
         for j in range(8):
-            buttons[i].append(tkinter.Button(window, text=board[i][j]))
+            buttons[i].append(Button(window, text=board[i][j]))
             buttons[i][j].configure(command= lambda i=i, j=j: piece_control(i, j))
             buttons[i][j].config(height=cell_size, width=cell_size, font=skin)
             buttons[i][j].grid(row=i, column=j, padx=0, pady=0, sticky="nsew")
@@ -76,6 +75,17 @@ def end_turn(piece, coordinates):
     else:
         turn = "white"
     refresh_board()
+
+
+# TODO: fix this later
+def update_turn(root):
+    print("updating")
+    if turn == "white":
+        root.entryconfigure(0, label="White's turn")
+        print("changed")
+    elif turn == "black":
+        root.entryconfigure(0, label="Black's turn")
+    window.update()
 
 
 def promote(c):
@@ -218,10 +228,28 @@ def piece_control(i, j):
 
 ##################### Menu Bar #####################
 menu_bar = Menu(window)
+
+
+# TODO: Create a log history
+def show_log():
+    log_window = Tk()
+    log_window.title("Log History")
+    log_window.geometry("300x500")
+
+
 skin_menu = Menu(menu_bar, tearoff=0)
-skin_menu.add_command(label="Default", command=reset_board())
+skin_menu.add_command(label="Default", command=reset_board)
 skin_menu.add_command(label="Arial", command=change_skin_to_arial)
-menu_bar.add_cascade(label="Change Skin", menu=skin_menu)
+
+overall_menu = Menu(menu_bar, tearoff=0)
+overall_menu.add_cascade(label="Show Log", command=show_log)
+overall_menu.add_cascade(label="Skin Settings", menu=skin_menu)
+
+menu_bar.add_cascade(label="☰", menu=overall_menu)
+
+# TODO: Lable should change after end_turn()
+menu_bar.add_cascade(label="White's turn") # , command=lambda: update_turn(menu_bar)
+
 window.config(menu=menu_bar)
 
 
