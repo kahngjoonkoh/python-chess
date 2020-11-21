@@ -51,10 +51,7 @@ def set_buttons(skin):
             buttons[i][j].configure(command= lambda i=i, j=j: piece_control(i, j))
             buttons[i][j].config(height=cell_size, width=cell_size, font=skin)
             buttons[i][j].grid(row=i, column=j, padx=0, pady=0, sticky="nsew")
-            if (i+j)%2 == 0:
-                buttons[i][j].config(image=white_block, compound="center")
-            else:
-                buttons[i][j].config(image=gray_block, compound="center")
+    refresh_board()
 
 
 def refresh_board():
@@ -65,8 +62,13 @@ def refresh_board():
             else:
                 buttons[i][j].config(image=gray_block, compound="center")
 
-def end_turn():
+
+def end_turn(piece, coordinates):
     global piece_selected, turn, select_memory
+    if select_memory["piece"] == "♟" and select_memory["coordinates"]["x"] == 6 and coordinates["x"] == 7:
+        promote("black")
+    elif select_memory["piece"] == "♙" and select_memory["coordinates"]["x"] == 1 and coordinates["x"] == 0:
+        promote("white")
     piece_selected = False
     select_memory = {"piece": None, "coordinates": None}
     if turn == "white":
@@ -75,9 +77,94 @@ def end_turn():
         turn = "white"
     refresh_board()
 
-##Start work from here
+
+def promote(c):
+    print("🎖️")
+    small_font = ("helvetica", 20)
+    promotion_window = Tk()
+    promotion_window.title("Select Promotion")
+    promotion_window.geometry("260x55")
+    if c == "white":
+        Button(promotion_window, text="♙", font=small_font,
+               command=lambda p="♙", root=promotion_window: promote_to(p, root)).grid(row=0, column=0)
+        Button(promotion_window, text="♘", font=small_font,
+               command=lambda p="♘", root=promotion_window: promote_to(p, root)).grid(row=0, column=1)
+        Button(promotion_window, text="♗", font=small_font,
+               command=lambda p="♗", root=promotion_window: promote_to(p, root)).grid(row=0, column=2)
+        Button(promotion_window, text="♖", font=small_font,
+               command=lambda p="♖", root=promotion_window: promote_to(p, root)).grid(row=0, column=3)
+        Button(promotion_window, text="♕", font=small_font,
+               command=lambda p="♕", root=promotion_window: promote_to(p, root)).grid(row=0, column=4)
+
+    elif c == "black":
+        Button(promotion_window, text="♟", font=small_font,
+               command=lambda p="♟", root=promotion_window: promote_to(p, root)).grid(row=0, column=0)
+        Button(promotion_window, text="♞", font=small_font,
+               command=lambda p="♞", root=promotion_window: promote_to(p, root)).grid(row=0, column=1)
+        Button(promotion_window, text="♝", font=small_font,
+               command=lambda p="♝", root=promotion_window: promote_to(p, root)).grid(row=0, column=2)
+        Button(promotion_window, text="♜", font=small_font,
+               command=lambda p="♜", root=promotion_window: promote_to(p, root)).grid(row=0, column=3)
+        Button(promotion_window, text="♛", font=small_font,
+               command=lambda p="♛", root=promotion_window: promote_to(p, root)).grid(row=0, column=4)
+
+
+def promote_to(p, root):
+    print("promoting")
+    global piece, coordinates, select_memory
+    tile["text"] = p
+    board[coordinates["x"]][coordinates["y"]] = p
+    root.destroy()
+
+
+def select_piece(i, j):
+    global piece_selected, select_memory, tile
+    piece_selected = True
+    tile["image"] = sel_block
+    print(piece)
+    select_memory = {"piece": piece, "coordinates": coordinates}
+    if piece == "♙":  # White Pawn
+        print("1")
+        if i == 6:  # Two space movement at first move
+            buttons[i - 1][j]["image"] = move_block
+            buttons[i - 2][j]["image"] = move_block
+        elif buttons[i - 1][j]["text"] == " " and i != 0:  # Single space movement for every other situation
+            buttons[i - 1][j]["image"] = move_block
+
+        try:
+            if buttons[i - 1][j - 1]["text"] in "♟♞♝♜♛♚":  # Capture
+                buttons[i - 1][j - 1]["image"] = capture_block
+        except:
+            pass
+        try:
+            if buttons[i - 1][j + 1]["text"] in "♟♞♝♜♛♚":
+                buttons[i - 1][j + 1]["image"] = capture_block
+        except:
+            pass
+
+    # TODO:En passant capture
+    elif piece == "♟":  # Black Pawn
+        print("2")
+        if i == 1:  # Two space movement at first move
+            buttons[i + 1][j]["image"] = move_block
+            buttons[i + 2][j]["image"] = move_block
+        elif buttons[i + 1][j]["text"] == " " and i != 7:  # Single space movement for every other situation
+            buttons[i + 1][j]["image"] = move_block
+
+        try:
+            if buttons[i + 1][j - 1]["text"] in "♙♘♗♖♕♔":  # Capture
+                buttons[i + 1][j - 1]["image"] = capture_block
+        except:
+            pass
+        try:
+            if buttons[i + 1][j + 1]["text"] in "♙♘♗♖♕♔":
+                buttons[i + 1][j + 1]["image"] = capture_block
+        except:
+            pass
+    print("3")
+
 def piece_control(i, j):
-    global piece_selected, turn, select_memory
+    global piece_selected, turn, select_memory, piece, coordinates, tile
     coordinates = {"x":i, "y":j}
     tile = buttons[i][j]
     piece = tile["text"]
@@ -90,56 +177,41 @@ def piece_control(i, j):
     print(piece, coordinates)
     print(tile["image"],piece_selected,color,turn)
 
-    #If a piece is newly selected and its the person's turn.
-    if piece != " " and not piece_selected and color == turn: #Selecting a piece
-        piece_selected = True
-        tile["image"] = sel_block
-        select_memory = {"piece":piece, "coordinates":coordinates}
-        if piece == "♙": #White Pawn
-            if i == 6: #Two space movement at first move
-                buttons[i-1][j]["image"] = move_block
-                buttons[i-2][j]["image"] = move_block
-            elif buttons[i-1][j]["text"] == " ": #Single space movement for every other situation
-                buttons[i-1][j]["image"] = move_block
+    # If a piece is newly selected and its the person's turn.
+    if piece != " " and not piece_selected and color == turn:  # Selecting a piece
+        select_piece(i, j)
 
-            if buttons[i-1][j-1]["text"] in "♟♞♝♜♛♚": #Capture
-                buttons[i-1][j-1]["image"] = capture_block
-            elif buttons[i-1][j+1]["text"] in "♟♞♝♜♛♚":
-                buttons[i-1][j+1]["image"] = capture_block
-
-
-        elif piece == "♟": #Black Pawn
-            if i == 1: #Two space movement at first move
-                buttons[i+1][j]["image"] = move_block
-                buttons[i+2][j]["image"] = move_block
-            elif buttons[i+1][j]["text"] == " ": #Single space movement for every other situation
-                buttons[i+1][j]["image"] = move_block
-
-            if buttons[i+1][j-1]["text"] in "♙♘♗♖♕♔": #Capture
-                buttons[i+1][j-1]["image"] = capture_block
-            elif buttons[i+1][j+1]["text"] in "♙♘♗♖♕♔":
-                buttons[i+1][j+1]["image"] = capture_block
-
-    #If there was a piece previously selected and its the person's turn to move.
-    elif tile["image"] == "pyimage5" and piece_selected: #Movement
+    # Movement
+    elif tile["image"] == "pyimage5":
         tile["text"] = select_memory["piece"]
         board[i][j] = select_memory["piece"]
         buttons[select_memory["coordinates"]["x"]][select_memory["coordinates"]["y"]]["text"] = " "
         board[select_memory["coordinates"]["x"]][select_memory["coordinates"]["y"]] = " "
-        end_turn()
+        end_turn(piece, coordinates)
 
-    #TODO: cancel when click another piece
-    elif coordinates == select_memory["coordinates"]: #cancelation
+    # Cancellation
+    elif coordinates == select_memory["coordinates"]:
         piece_selected = False
-        select_memory = {"piece":None, "coordinates":None}
+        select_memory = {"piece": None, "coordinates": None}
         refresh_board()
 
-    if tile["image"] == "pyimage6" and piece_selected: #Capture
+    # coordinates != select_memory["coordinates"] is implied
+    # Choosing a different piece.
+    elif piece != " " and color == turn:
+        print("inline")
+        piece_selected = False
+        select_memory = {"piece": None, "coordinates": None}
+        refresh_board()
+        select_piece(i, j)
+
+    # Capture
+    if tile["image"] == "pyimage6":
         tile["text"] = select_memory["piece"]
         board[i][j] = select_memory["piece"]
         buttons[select_memory["coordinates"]["x"]][select_memory["coordinates"]["y"]]["text"] = " "
         board[select_memory["coordinates"]["x"]][select_memory["coordinates"]["y"]] = " "
-        end_turn()
+        print("⚔", piece, coordinates)
+        end_turn(piece, coordinates)
 
 
 
