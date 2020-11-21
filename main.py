@@ -123,7 +123,7 @@ def promote(c):
         Button(promotion_window, text="♛", font=small_font,
                command=lambda color=c, p="♛", root=promotion_window: promote_to(color, p, root)).grid(row=0, column=4)
 
-
+# TODO: Change all the print(log) to display_log() or something equivalent
 def promote_to(color, p, root):
     global piece, coordinates, select_memory
     tile["text"] = p
