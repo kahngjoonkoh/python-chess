@@ -155,9 +155,10 @@ def select_piece(i, j):
     tile["image"] = sel_block
     select_memory = {"piece": piece, "coordinates": coordinates}
     if piece == "♙":  # White Pawn
-        if i == 6:  # Two space movement at first move
+        if i == 6 and buttons[i - 1][j]["text"] == " ":  # Two space movement at first move
             buttons[i - 1][j]["image"] = move_block
-            buttons[i - 2][j]["image"] = move_block
+            if buttons[i - 2][j]["text"] == " ":
+                buttons[i - 2][j]["image"] = move_block
         elif buttons[i - 1][j]["text"] == " " and i != 0:  # Single space movement for every other situation
             buttons[i - 1][j]["image"] = move_block
 
@@ -174,9 +175,10 @@ def select_piece(i, j):
 
     # TODO:En passant capture
     elif piece == "♟":  # Black Pawn
-        if i == 1:  # Two space movement at first move
+        if i == 1 and buttons[i+1][j]["text"] == " ":  # Two space movement at first move
             buttons[i + 1][j]["image"] = move_block
-            buttons[i + 2][j]["image"] = move_block
+            if buttons[i + 2][j]["text"] == " ":
+                buttons[i + 2][j]["image"] = move_block
         elif buttons[i + 1][j]["text"] == " " and i != 7:  # Single space movement for every other situation
             buttons[i + 1][j]["image"] = move_block
 
