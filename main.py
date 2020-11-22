@@ -154,6 +154,7 @@ def select_piece(i, j):
     piece_selected = True
     tile["image"] = sel_block
     select_memory = {"piece": piece, "coordinates": coordinates}
+    # TODO:En passant capture
     if piece == "♙":  # White Pawn
         if i == 6 and buttons[i - 1][j]["text"] == " ":  # Two space movement at first move
             buttons[i - 1][j]["image"] = move_block
@@ -162,18 +163,11 @@ def select_piece(i, j):
         elif buttons[i - 1][j]["text"] == " " and i != 0:  # Single space movement for every other situation
             buttons[i - 1][j]["image"] = move_block
 
-        try:
-            if buttons[i - 1][j - 1]["text"] in "♟♞♝♜♛♚" and j != 0:  # Capture
-                buttons[i - 1][j - 1]["image"] = capture_block
-        except:
-            pass
-        try:
-            if buttons[i - 1][j + 1]["text"] in "♟♞♝♜♛♚":
-                buttons[i - 1][j + 1]["image"] = capture_block
-        except:
-            pass
+        if j != 0 and buttons[i - 1][j - 1]["text"] in "♟♞♝♜♛♚":  # Capture
+            buttons[i - 1][j - 1]["image"] = capture_block
+        if j != 7 and buttons[i - 1][j + 1]["text"] in "♟♞♝♜♛♚":
+            buttons[i - 1][j + 1]["image"] = capture_block
 
-    # TODO:En passant capture
     elif piece == "♟":  # Black Pawn
         if i == 1 and buttons[i+1][j]["text"] == " ":  # Two space movement at first move
             buttons[i + 1][j]["image"] = move_block
@@ -182,24 +176,23 @@ def select_piece(i, j):
         elif buttons[i + 1][j]["text"] == " " and i != 7:  # Single space movement for every other situation
             buttons[i + 1][j]["image"] = move_block
 
-        try:
-            if buttons[i + 1][j - 1]["text"] in "♙♘♗♖♕♔" and j != 0:  # Capture
-                buttons[i + 1][j - 1]["image"] = capture_block
-        except:
-            pass
-        try:
-            if buttons[i + 1][j + 1]["text"] in "♙♘♗♖♕♔":
-                buttons[i + 1][j + 1]["image"] = capture_block
-        except:
-            pass
+        if j != 0 and buttons[i + 1][j - 1]["text"] in "♙♘♗♖♕♔":  # Capture
+            buttons[i + 1][j - 1]["image"] = capture_block
+        if j != 7 and buttons[i + 1][j + 1]["text"] in "♙♘♗♖♕♔":
+            buttons[i + 1][j + 1]["image"] = capture_block
+
     elif piece == "♘":  # White Knight
         pass
     elif piece == "♗":  # White Bishop
         for shift in range(1, j+1):
-            try:
+            if buttons[i-shift][j-shift]["text"] == " ":
                 buttons[i-shift][j-shift]["image"] = move_block
-            except:
-                pass
+            elif buttons[i-shift][j-shift]["text"] in "♟♞♝♜♛♚":
+                buttons[i - shift][j - shift]["image"] = capture_block
+                break
+            else:
+                break
+
 
 
 def piece_control(i, j):
