@@ -26,7 +26,8 @@ sel_block = PhotoImage(file="turquoise_block.PNG") #pyimage4
 move_block = PhotoImage(file="purple_block.PNG") #pyimage6
 capture_block = PhotoImage(file="red_block.PNG") #pyimage7
 window.iconphoto(False, icon)
-window.geometry("544x565")
+window.geometry("570x600")
+window.resizable(False, False)
 
 # TODO: Create the alphabet and numeric notations on the sides
 ####################### Functions #########################
@@ -65,14 +66,24 @@ def refresh_board():
                 buttons[i][j].config(image=gray_block, compound="center")
 
 
+def convert_coordinates(i1, j1, i2, j2):
+    x1 = "abcdefgh"[j1]
+    x2 = "abcdefgh"[j2]
+    y1 = "87654321"[i1]
+    y2 = "87654321"[i2]
+    return x1, y1, x2, y2
+
+
 def end_turn(piece, coordinates, motion):
     global piece_selected, turn, select_memory
-    log = f"{select_memory['piece']}[{select_memory['coordinates']['x']+1},{select_memory['coordinates']['y']+1}] {motion} {piece}[{coordinates['x']+1},{coordinates['y']+1}]"
+    x1, y1, x2, y2 = convert_coordinates(select_memory['coordinates']['x'], select_memory['coordinates']['y'], coordinates['x'], coordinates['y'])
+    log = f"{select_memory['piece']} {x1}{y1} {motion} {piece} {x2}{y2}"
     if select_memory["piece"] == "♙" and select_memory["coordinates"]["x"] == 1 and coordinates["x"] == 0:
         promote("white")
     elif select_memory["piece"] == "♟" and select_memory["coordinates"]["x"] == 6 and coordinates["x"] == 7:
         promote("black")
-    print(log)
+    log_history.append(log)
+    update_log()
     piece_selected = False
     select_memory = {"piece": None, "coordinates": None}
     if turn == "white":
@@ -99,6 +110,7 @@ def promote(c):
     promotion_window = Tk()
     promotion_window.title("Select Promotion")
     promotion_window.geometry("260x55")
+    promotion_window.resizable(False, False)
     if c == "white":
         Button(promotion_window, text="♙", font=small_font,
                command=lambda color=c, p="♙", root=promotion_window: promote_to(color, p, root)).grid(row=0, column=0)
@@ -123,17 +135,19 @@ def promote(c):
         Button(promotion_window, text="♛", font=small_font,
                command=lambda color=c, p="♛", root=promotion_window: promote_to(color, p, root)).grid(row=0, column=4)
 
+
 # TODO: Change all the print(log) to display_log() or something equivalent
 def promote_to(color, p, root):
     global piece, coordinates, select_memory
     tile["text"] = p
     board[coordinates["x"]][coordinates["y"]] = p
+    # TODO: Show promotion
     promoted_to = p
     if color == "white":
-        log = f"♙-🎖️→{promoted_to}"
+        log_history.append(f"♙ ⚜ {promoted_to}")
     elif color == "black":
-        log = f"♟-🎖️→{promoted_to}"
-    print(log)
+        log_history.append(f"♟ ⚜ {promoted_to}")
+    update_log()
     root.destroy()
 
 
@@ -150,7 +164,7 @@ def select_piece(i, j):
             buttons[i - 1][j]["image"] = move_block
 
         try:
-            if buttons[i - 1][j - 1]["text"] in "♟♞♝♜♛♚":  # Capture
+            if buttons[i - 1][j - 1]["text"] in "♟♞♝♜♛♚" and j != 0:  # Capture
                 buttons[i - 1][j - 1]["image"] = capture_block
         except:
             pass
@@ -168,8 +182,10 @@ def select_piece(i, j):
         elif buttons[i + 1][j]["text"] == " " and i != 7:  # Single space movement for every other situation
             buttons[i + 1][j]["image"] = move_block
 
+
+        # TODO: Fix this part
         try:
-            if buttons[i + 1][j - 1]["text"] in "♙♘♗♖♕♔":  # Capture
+            if buttons[i + 1][j - 1]["text"] in "♙♘♗♖♕♔" and j != 0:  # Capture
                 buttons[i + 1][j - 1]["image"] = capture_block
         except:
             pass
@@ -178,6 +194,14 @@ def select_piece(i, j):
                 buttons[i + 1][j + 1]["image"] = capture_block
         except:
             pass
+    elif piece == "♘":  # White Knight
+        pass
+    elif piece == "♗":  # White Bishop
+        for shift in range(1, j+1):
+            try:
+                buttons[i-shift][j-shift]["image"] = move_block
+            except:
+                pass
 
 
 def piece_control(i, j):
@@ -237,9 +261,32 @@ menu_bar = Menu(window)
 
 # TODO: Create a log history
 def show_log():
+    global log_list
     log_window = Tk()
     log_window.title("Log History")
-    log_window.geometry("300x500")
+    log_window.geometry("250x300")
+    scrollbar = Scrollbar(log_window, orient=VERTICAL)
+    log_list = Listbox(log_window, yscrollcommand=scrollbar.set)
+    log_list.config(font=("Helvetica", 20))
+    log_list.config(height=300, width=250)
+    scrollbar.config(command=log_list.yview)
+    scrollbar.pack(side=RIGHT, fill=Y)
+    log_list.pack(side=LEFT, fill=BOTH, expand=1)
+    scrollbar.pack(side=RIGHT, fill=BOTH)
+    log_list.config(yscrollcommand=scrollbar.set)
+    scrollbar.config(command=log_list.yview)
+    update_log()
+    mainloop()
+
+
+# TODO: debug
+def update_log():
+    try:
+        log_list.delete(0, END)
+        for l in log_history:
+            log_list.insert(END, l)
+    except:
+        pass
 
 
 skin_menu = Menu(menu_bar, tearoff=0)
@@ -261,8 +308,13 @@ menu_bar.add_cascade(label="White's turn") # , command=lambda: update_turn(menu_
 window.config(menu=menu_bar)
 
 
-#Equivalent to set_buttons()
+# Equivalent to set_buttons()
 reset_board()
+for i in range(8):
+    alphabet = "abcdefgh"[i]
+    num = "87654321"[i]
+    Label(window, text=alphabet, font=("helvetica", 20)).grid(row=8, column=i)
+    Label(window, text=num, font=("helvetica", 20)).grid(row=i, column=8)
 
 
 window.mainloop()
