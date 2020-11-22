@@ -200,6 +200,46 @@ def bishop(i, j, text):
             else:
                 break
 
+
+def rook(i, j, text):
+    if j >= 1:  # 9:00 direction
+        for shift in range(1, j+1):
+            if buttons[i][j - shift]["text"] == " ":
+                buttons[i][j - shift]["image"] = move_block
+            elif buttons[i][j - shift]["text"] in text:
+                buttons[i][j - shift]["image"] = capture_block
+                break
+            else:
+                break
+    if i >= 1:  # 12:00 direction
+        for shift in range(1, i+1):
+            if buttons[i - shift][j]["text"] == " ":
+                buttons[i - shift][j]["image"] = move_block
+            elif buttons[i - shift][j]["text"] in text:
+                buttons[i - shift][j]["image"] = capture_block
+                break
+            else:
+                break
+    if j <= 6:  # 3:00 direction
+        for shift in range(1, 8-j):
+            if buttons[i][j + shift]["text"] == " ":
+                buttons[i][j + shift]["image"] = move_block
+            elif buttons[i][j + shift]["text"] in text:
+                buttons[i][j + shift]["image"] = capture_block
+                break
+            else:
+                break
+    if i <= 6:  # 6:00 direction
+        for shift in range(1, 8-i):
+            if buttons[i + shift][j]["text"] == " ":
+                buttons[i + shift][j]["image"] = move_block
+            elif buttons[i + shift][j]["text"] in text:
+                buttons[i + shift][j]["image"] = capture_block
+                break
+            else:
+                break
+
+
 def select_piece(i, j):
     global piece_selected, select_memory, tile
     piece_selected = True
@@ -241,54 +281,27 @@ def select_piece(i, j):
         bishop(i, j, "♟♞♝♜♛♚")
 
     elif piece == "♝":  # Black Bishop
-        if i >= 1 and j >= 1:  # 10:30 direction
-            for shift in range(1, compare(i, j, False)+1):
-                if buttons[i-shift][j-shift]["text"] == " ":
-                    buttons[i-shift][j-shift]["image"] = move_block
-                elif buttons[i-shift][j-shift]["text"] in "♙♘♗♖♕♔":
-                    buttons[i - shift][j - shift]["image"] = capture_block
-                    break
-                else:
-                    break
-        if i >= 1 and j <= 6:  # 1:30 direction
-            for shift in range(1, compare(i, 7-j, False)+1):
-                if buttons[i-shift][j+shift]["text"] == " ":
-                    buttons[i-shift][j+shift]["image"] = move_block
-                elif buttons[i-shift][j+shift]["text"] in "♙♘♗♖♕♔":
-                    buttons[i-shift][j+shift]["image"] = capture_block
-                    break
-                else:
-                    break
-        if i <= 6 and j >= 1:  # 7:30 direction
-            for shift in range(1, compare(7-i, j, False)+1):
-                if buttons[i+shift][j-shift]["text"] == " ":
-                    buttons[i+shift][j-shift]["image"] = move_block
-                elif buttons[i+shift][j-shift]["text"] in "♙♘♗♖♕♔":
-                    buttons[i+shift][j-shift]["image"] = capture_block
-                    break
-                else:
-                    break
-        if i <=6 and j <= 6:  # 4:30 direction
-            for shift in range(1, compare(7-i, 7-j, False)+1):
-                if buttons[i+shift][j+shift]["text"] == " ":
-                    buttons[i+shift][j+shift]["image"] = move_block
-                elif buttons[i+shift][j+shift]["text"] in "♙♘♗♖♕♔":
-                    buttons[i+shift][j+shift]["image"] = capture_block
-                    break
-                else:
-                    break
+        bishop(i, j, "♙♘♗♖♕♔")
+
     elif piece == "♖":  # White Rook
-        pass
+        rook(i, j, "♟♞♝♜♛♚")
+
     elif piece == "♜":  # Black Rook
-        pass
+        rook(i, j, "♙♘♗♖♕♔")
+
     elif piece == "♕":  # White Queen
-        pass
+        bishop(i, j, "♟♞♝♜♛♚")
+        rook(i, j, "♟♞♝♜♛♚")
+
     elif piece == "♛":  # Black Queen
-        pass
+        bishop(i, j, "♙♘♗♖♕♔")
+        rook(i, j, "♙♘♗♖♕♔")
+
     elif piece == "♔":  # White King
         pass
     elif piece == "♚":  # Black King
         pass
+
 
 def piece_control(i, j):
     global piece_selected, turn, select_memory, piece, coordinates, tile
