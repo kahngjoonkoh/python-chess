@@ -19,12 +19,12 @@ log_history = []
 ########################## Initialise #######################
 window = Tk()
 window.title("Chess")
-icon = PhotoImage(file="chess_icon.png") #pyimage1
-white_block = PhotoImage(file="white_block.PNG") #pyimage2
-gray_block = PhotoImage(file="gray_block.PNG") #pyimage3
-sel_block = PhotoImage(file="turquoise_block.PNG") #pyimage4
-move_block = PhotoImage(file="purple_block.PNG") #pyimage6
-capture_block = PhotoImage(file="red_block.PNG") #pyimage7
+icon = PhotoImage(file="graphics/chess_icon.png") #pyimage1
+white_block = PhotoImage(file="graphics/white_block.PNG") #pyimage2
+gray_block = PhotoImage(file="graphics/gray_block.PNG") #pyimage3
+sel_block = PhotoImage(file="graphics/turquoise_block.PNG") #pyimage4
+move_block = PhotoImage(file="graphics/purple_block.PNG") #pyimage6
+capture_block = PhotoImage(file="graphics/red_block.PNG") #pyimage7
 window.iconphoto(False, icon)
 window.geometry("570x600")
 window.resizable(False, False)
