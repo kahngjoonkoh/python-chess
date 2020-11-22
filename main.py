@@ -149,12 +149,64 @@ def promote_to(color, p, root):
     root.destroy()
 
 
+def compare(i, j, max):
+    if max:
+        if i>=j:
+            return i
+        else:
+            return j
+    else:
+        if i>=j:
+            return j
+        else:
+            return i
+
+
+def bishop(i, j, text):
+    if i >= 1 and j >= 1:  # 10:30 direction
+        for shift in range(1, compare(i, j, False) + 1):
+            if buttons[i - shift][j - shift]["text"] == " ":
+                buttons[i - shift][j - shift]["image"] = move_block
+            elif buttons[i - shift][j - shift]["text"] in text:
+                buttons[i - shift][j - shift]["image"] = capture_block
+                break
+            else:
+                break
+    if i >= 1 and j <= 6:  # 1:30 direction
+        for shift in range(1, compare(i, 7 - j, False) + 1):
+            if buttons[i - shift][j + shift]["text"] == " ":
+                buttons[i - shift][j + shift]["image"] = move_block
+            elif buttons[i - shift][j + shift]["text"] in text:
+                buttons[i - shift][j + shift]["image"] = capture_block
+                break
+            else:
+                break
+    if i <= 6 and j >= 1:  # 7:30 direction
+        for shift in range(1, compare(7 - i, j, False) + 1):
+            if buttons[i + shift][j - shift]["text"] == " ":
+                buttons[i + shift][j - shift]["image"] = move_block
+            elif buttons[i + shift][j - shift]["text"] in text:
+                buttons[i + shift][j - shift]["image"] = capture_block
+                break
+            else:
+                break
+    if i <= 6 and j <= 6:  # 4:30 direction
+        for shift in range(1, compare(7 - i, 7 - j, False) + 1):
+            if buttons[i + shift][j + shift]["text"] == " ":
+                buttons[i + shift][j + shift]["image"] = move_block
+            elif buttons[i + shift][j + shift]["text"] in text:
+                buttons[i + shift][j + shift]["image"] = capture_block
+                break
+            else:
+                break
+
 def select_piece(i, j):
     global piece_selected, select_memory, tile
     piece_selected = True
     tile["image"] = sel_block
     select_memory = {"piece": piece, "coordinates": coordinates}
     # TODO:En passant capture
+    # TODO:Castling, Check and Checkmate features.
     if piece == "♙":  # White Pawn
         if i == 6 and buttons[i - 1][j]["text"] == " ":  # Two space movement at first move
             buttons[i - 1][j]["image"] = move_block
@@ -183,17 +235,60 @@ def select_piece(i, j):
 
     elif piece == "♘":  # White Knight
         pass
+    elif piece == "♞":  # Black Knight
+        pass
     elif piece == "♗":  # White Bishop
-        for shift in range(1, j+1):
-            if buttons[i-shift][j-shift]["text"] == " ":
-                buttons[i-shift][j-shift]["image"] = move_block
-            elif buttons[i-shift][j-shift]["text"] in "♟♞♝♜♛♚":
-                buttons[i - shift][j - shift]["image"] = capture_block
-                break
-            else:
-                break
+        bishop(i, j, "♟♞♝♜♛♚")
 
-
+    elif piece == "♝":  # Black Bishop
+        if i >= 1 and j >= 1:  # 10:30 direction
+            for shift in range(1, compare(i, j, False)+1):
+                if buttons[i-shift][j-shift]["text"] == " ":
+                    buttons[i-shift][j-shift]["image"] = move_block
+                elif buttons[i-shift][j-shift]["text"] in "♙♘♗♖♕♔":
+                    buttons[i - shift][j - shift]["image"] = capture_block
+                    break
+                else:
+                    break
+        if i >= 1 and j <= 6:  # 1:30 direction
+            for shift in range(1, compare(i, 7-j, False)+1):
+                if buttons[i-shift][j+shift]["text"] == " ":
+                    buttons[i-shift][j+shift]["image"] = move_block
+                elif buttons[i-shift][j+shift]["text"] in "♙♘♗♖♕♔":
+                    buttons[i-shift][j+shift]["image"] = capture_block
+                    break
+                else:
+                    break
+        if i <= 6 and j >= 1:  # 7:30 direction
+            for shift in range(1, compare(7-i, j, False)+1):
+                if buttons[i+shift][j-shift]["text"] == " ":
+                    buttons[i+shift][j-shift]["image"] = move_block
+                elif buttons[i+shift][j-shift]["text"] in "♙♘♗♖♕♔":
+                    buttons[i+shift][j-shift]["image"] = capture_block
+                    break
+                else:
+                    break
+        if i <=6 and j <= 6:  # 4:30 direction
+            for shift in range(1, compare(7-i, 7-j, False)+1):
+                if buttons[i+shift][j+shift]["text"] == " ":
+                    buttons[i+shift][j+shift]["image"] = move_block
+                elif buttons[i+shift][j+shift]["text"] in "♙♘♗♖♕♔":
+                    buttons[i+shift][j+shift]["image"] = capture_block
+                    break
+                else:
+                    break
+    elif piece == "♖":  # White Rook
+        pass
+    elif piece == "♜":  # Black Rook
+        pass
+    elif piece == "♕":  # White Queen
+        pass
+    elif piece == "♛":  # Black Queen
+        pass
+    elif piece == "♔":  # White King
+        pass
+    elif piece == "♚":  # Black King
+        pass
 
 def piece_control(i, j):
     global piece_selected, turn, select_memory, piece, coordinates, tile
@@ -299,11 +394,11 @@ window.config(menu=menu_bar)
 
 # Equivalent to set_buttons()
 reset_board()
-for i in range(8):
-    alphabet = "abcdefgh"[i]
-    num = "87654321"[i]
-    Label(window, text=alphabet, font=("helvetica", 20)).grid(row=8, column=i)
-    Label(window, text=num, font=("helvetica", 20)).grid(row=i, column=8)
+for k in range(8):
+    alphabet = "abcdefgh"[k]
+    num = "87654321"[k]
+    Label(window, text=alphabet, font=("helvetica", 20)).grid(row=8, column=k)
+    Label(window, text=num, font=("helvetica", 20)).grid(row=k, column=8)
 
 
 window.mainloop()
