@@ -93,7 +93,7 @@ def end_turn(piece, coordinates, motion):
     refresh_board()
 
 
-# TODO: fix this later
+# TODO: The turn should be updated every turn.
 def update_turn(root):
     print("updating")
     if turn == "white":
@@ -136,12 +136,10 @@ def promote(c):
                command=lambda color=c, p="♛", root=promotion_window: promote_to(color, p, root)).grid(row=0, column=4)
 
 
-# TODO: Change all the print(log) to display_log() or something equivalent
 def promote_to(color, p, root):
     global piece, coordinates, select_memory
     tile["text"] = p
     board[coordinates["x"]][coordinates["y"]] = p
-    # TODO: Show promotion
     promoted_to = p
     if color == "white":
         log_history.append(f"♙ ⚜ {promoted_to}")
@@ -182,8 +180,6 @@ def select_piece(i, j):
         elif buttons[i + 1][j]["text"] == " " and i != 7:  # Single space movement for every other situation
             buttons[i + 1][j]["image"] = move_block
 
-
-        # TODO: Fix this part
         try:
             if buttons[i + 1][j - 1]["text"] in "♙♘♗♖♕♔" and j != 0:  # Capture
                 buttons[i + 1][j - 1]["image"] = capture_block
@@ -259,7 +255,6 @@ def piece_control(i, j):
 menu_bar = Menu(window)
 
 
-# TODO: Create a log history
 def show_log():
     global log_list
     log_window = Tk()
@@ -279,7 +274,6 @@ def show_log():
     mainloop()
 
 
-# TODO: debug
 def update_log():
     try:
         log_list.delete(0, END)
@@ -302,7 +296,7 @@ overall_menu.add_cascade(label="Quit", command=window.destroy)
 
 menu_bar.add_cascade(label="☰", menu=overall_menu)
 
-# TODO: Label should change after end_turn()
+# TODO: The turn should be updated every turn
 menu_bar.add_cascade(label="White's turn") # , command=lambda: update_turn(menu_bar)
 
 window.config(menu=menu_bar)
