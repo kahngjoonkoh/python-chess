@@ -162,6 +162,10 @@ def compare(i, j, max):
             return i
 
 
+def knight(i, j, text):
+    pass
+
+
 def bishop(i, j, text):
     if i >= 1 and j >= 1:  # 10:30 direction
         for shift in range(1, compare(i, j, False) + 1):
@@ -240,6 +244,10 @@ def rook(i, j, text):
                 break
 
 
+def king(i, j, text):
+    pass
+
+
 def select_piece(i, j):
     global piece_selected, select_memory, tile
     piece_selected = True
@@ -274,9 +282,11 @@ def select_piece(i, j):
             buttons[i + 1][j + 1]["image"] = capture_block
 
     elif piece == "♘":  # White Knight
-        pass
+        knight(i, j, "♟♞♝♜♛♚")
+
     elif piece == "♞":  # Black Knight
-        pass
+        knight(i, j, "♙♘♗♖♕♔")
+
     elif piece == "♗":  # White Bishop
         bishop(i, j, "♟♞♝♜♛♚")
 
@@ -298,9 +308,10 @@ def select_piece(i, j):
         rook(i, j, "♙♘♗♖♕♔")
 
     elif piece == "♔":  # White King
-        pass
+        king(i, j, "♟♞♝♜♛♚")
+
     elif piece == "♚":  # Black King
-        pass
+        king(i, j, "♙♘♗♖♕♔")
 
 
 def piece_control(i, j):
@@ -382,6 +393,7 @@ def update_log():
         log_list.delete(0, END)
         for l in log_history:
             log_list.insert(END, l)
+        log_list.see("end")
     except:
         pass
 
