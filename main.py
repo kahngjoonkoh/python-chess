@@ -151,19 +151,63 @@ def promote_to(color, p, root):
 
 def compare(i, j, max):
     if max:
-        if i>=j:
+        if i >= j:
             return i
         else:
             return j
     else:
-        if i>=j:
+        if i >= j:
             return j
         else:
             return i
 
 
+# TODO: Get rid of repetitiveness
 def knight(i, j, text):
-    pass
+    if i >= 2:
+        if j >= 1:  # 11:00 direction
+            if buttons[i - 2][j - 1]["text"] == " ":
+                buttons[i - 2][j - 1]["image"] = move_block
+            elif buttons[i - 2][j - 1]["text"] in text:
+                buttons[i - 2][j - 1]["image"] = capture_block
+        if j <= 6:  # 1:00 direction
+            if buttons[i - 2][j + 1]["text"] == " ":
+                buttons[i - 2][j + 1]["image"] = move_block
+            elif buttons[i - 2][j + 1]["text"] in text:
+                buttons[i - 2][j + 1]["image"] = capture_block
+    if i <= 5:
+        if j >= 1:  # 7:00 direction
+            if buttons[i + 2][j - 1]["text"] == " ":
+                buttons[i + 2][j - 1]["image"] = move_block
+            elif buttons[i + 2][j - 1]["text"] in text:
+                buttons[i + 2][j - 1]["image"] = capture_block
+        if j <= 6:  # 5:00 direction
+            if buttons[i + 2][j + 1]["text"] == " ":
+                buttons[i + 2][j + 1]["image"] = move_block
+            elif buttons[i + 2][j + 1]["text"] in text:
+                buttons[i + 2][j + 1]["image"] = capture_block
+    if j >= 2:
+        if i >= 1:  # 11:00 direction
+            if buttons[i - 1][j - 2]["text"] == " ":
+                buttons[i - 1][j - 2]["image"] = move_block
+            elif buttons[i - 1][j - 2]["text"] in text:
+                buttons[i - 1][j - 2]["image"] = capture_block
+        if i <= 6:  # 8:00 direction
+            if buttons[i + 1][j - 2]["text"] == " ":
+                buttons[i + 1][j - 2]["image"] = move_block
+            elif buttons[i + 1][j - 2]["text"] in text:
+                buttons[i + 1][j - 2]["image"] = capture_block
+    if j <= 5:
+        if i >= 1:  # 2:00 direction
+            if buttons[i - 1][j + 2]["text"] == " ":
+                buttons[i - 1][j + 2]["image"] = move_block
+            elif buttons[i - 1][j + 2]["text"] in text:
+                buttons[i - 1][j + 2]["image"] = capture_block
+        if i <= 6:  # 4:00 direction
+            if buttons[i + 1][j + 2]["text"] == " ":
+                buttons[i + 1][j + 2]["image"] = move_block
+            elif buttons[i + 1][j + 2]["text"] in text:
+                buttons[i + 1][j + 2]["image"] = capture_block
 
 
 def bishop(i, j, text):
@@ -245,7 +289,51 @@ def rook(i, j, text):
 
 
 def king(i, j, text):
-    pass
+    if i >= 1 and j >= 1:  # 10:30 direction
+        if buttons[i - 1][j - 1]["text"] == " ":
+            buttons[i - 1][j - 1]["image"] = move_block
+        elif buttons[i - 1][j - 1]["text"] in text:
+            buttons[i - 1][j - 1]["image"] = capture_block
+    if i >= 1 and j <= 6:  # 1:30 direction
+        if buttons[i - 1][j + 1]["text"] == " ":
+            buttons[i - 1][j + 1]["image"] = move_block
+        elif buttons[i - 1][j + 1]["text"] in text:
+            buttons[i - 1][j + 1]["image"] = capture_block
+
+    if i <= 6 and j >= 1:  # 7:30 direction
+        if buttons[i + 1][j - 1]["text"] == " ":
+            buttons[i + 1][j - 1]["image"] = move_block
+        elif buttons[i + 1][j - 1]["text"] in text:
+            buttons[i + 1][j - 1]["image"] = capture_block
+
+    if i <= 6 and j <= 6:  # 4:30 direction
+        if buttons[i + 1][j + 1]["text"] == " ":
+            buttons[i + 1][j + 1]["image"] = move_block
+        elif buttons[i + 1][j + 1]["text"] in text:
+            buttons[i + 1][j + 1]["image"] = capture_block
+    if j >= 1:  # 9:00 direction
+            if buttons[i][j - 1]["text"] == " ":
+                buttons[i][j - 1]["image"] = move_block
+            elif buttons[i][j - 1]["text"] in text:
+                buttons[i][j - 1]["image"] = capture_block
+
+    if i >= 1:  # 12:00 direction
+        if buttons[i - 1][j]["text"] == " ":
+            buttons[i - 1][j]["image"] = move_block
+        elif buttons[i - 1][j]["text"] in text:
+            buttons[i - 1][j]["image"] = capture_block
+
+    if j <= 6:  # 3:00 direction
+        if buttons[i][j + 1]["text"] == " ":
+            buttons[i][j + 1]["image"] = move_block
+        elif buttons[i][j + 1]["text"] in text:
+            buttons[i][j + 1]["image"] = capture_block
+
+    if i <= 6:  # 6:00 direction
+        if buttons[i + 1][j]["text"] == " ":
+            buttons[i + 1][j]["image"] = move_block
+        elif buttons[i + 1][j]["text"] in text:
+            buttons[i + 1][j]["image"] = capture_block
 
 
 def select_piece(i, j):
