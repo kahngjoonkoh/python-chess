@@ -88,20 +88,13 @@ def end_turn(piece, coordinates, motion):
     select_memory = {"piece": None, "coordinates": None}
     if turn == "white":
         turn = "black"
+        menu_bar.delete("White's Turn")
+        menu_bar.add_cascade(label="Black's Turn")
     else:
         turn = "white"
+        menu_bar.delete("Black's Turn")
+        menu_bar.add_cascade(label="White's Turn")
     refresh_board()
-
-
-# TODO: The turn should be updated every turn.
-def update_turn(root):
-    print("updating")
-    if turn == "white":
-        root.entryconfigure(0, label="White's turn")
-        print("changed")
-    elif turn == "black":
-        root.entryconfigure(0, label="Black's turn")
-    window.update()
 
 
 def promote(c):
@@ -500,7 +493,7 @@ overall_menu.add_cascade(label="Quit", command=window.destroy)
 menu_bar.add_cascade(label="☰", menu=overall_menu)
 
 # TODO: The turn should be updated every turn
-menu_bar.add_cascade(label="White's turn") # , command=lambda: update_turn(menu_bar)
+menu_bar.add_cascade(label="White's Turn")
 
 window.config(menu=menu_bar)
 
