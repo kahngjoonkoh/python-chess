@@ -491,8 +491,6 @@ overall_menu.add_separator()
 overall_menu.add_cascade(label="Quit", command=window.destroy)
 
 menu_bar.add_cascade(label="☰", menu=overall_menu)
-
-# TODO: The turn should be updated every turn
 menu_bar.add_cascade(label="White's Turn")
 
 window.config(menu=menu_bar)
