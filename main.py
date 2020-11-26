@@ -1,4 +1,5 @@
 from tkinter import *
+from tkinter import messagebox
 
 board = [['♜', '♞', '♝', '♛', '♚', '♝', '♞', '♜'],
          ['♟', '♟', '♟', '♟', '♟', '♟', '♟', '♟'],
@@ -74,6 +75,20 @@ def convert_coordinates(i1, j1, i2, j2):
     return x1, y1, x2, y2
 
 
+def scan_game_over():
+    white_king, black_king = False, False
+    for i in range(8):
+        for j in range(8):
+            if board[i][j] == "♔":
+                white_king = True
+            elif board[i][j] == "♚":
+                black_king = True
+    if not white_king:
+        messagebox.showinfo("Info", "Black Wins")
+    elif not black_king:
+        messagebox.showinfo("Info", "White Wins")
+
+
 def end_turn(piece, coordinates, motion):
     global piece_selected, turn, select_memory
     x1, y1, x2, y2 = convert_coordinates(select_memory['coordinates']['x'], select_memory['coordinates']['y'], coordinates['x'], coordinates['y'])
@@ -95,18 +110,17 @@ def end_turn(piece, coordinates, motion):
         menu_bar.delete("Black's Turn")
         menu_bar.add_cascade(label="White's Turn")
     refresh_board()
+    scan_game_over()
 
 
 def promote(c):
     global select_memory, promotion_window
     small_font = ("helvetica", 20)
     promotion_window = Tk()
-    promotion_window.title("Select Promotion")
-    promotion_window.geometry("260x55")
+    promotion_window.title("Select")
+    promotion_window.geometry("207x55")
     promotion_window.resizable(False, False)
     if c == "white":
-        Button(promotion_window, text="♙", font=small_font,
-               command=lambda color=c, p="♙", root=promotion_window: promote_to(color, p, root)).grid(row=0, column=0)
         Button(promotion_window, text="♘", font=small_font,
                command=lambda color=c, p="♘", root=promotion_window: promote_to(color, p, root)).grid(row=0, column=1)
         Button(promotion_window, text="♗", font=small_font,
@@ -117,8 +131,6 @@ def promote(c):
                command=lambda color=c, p="♕", root=promotion_window: promote_to(color, p, root)).grid(row=0, column=4)
 
     elif c == "black":
-        Button(promotion_window, text="♟", font=small_font,
-               command=lambda color=c, p="♟", root=promotion_window: promote_to(color, p, root)).grid(row=0, column=0)
         Button(promotion_window, text="♞", font=small_font,
                command=lambda color=c, p="♞", root=promotion_window: promote_to(color, p, root)).grid(row=0, column=1)
         Button(promotion_window, text="♝", font=small_font,
